@@ -88,7 +88,16 @@ class SingularityContainer(SubprocessBase):
         if self.runtime_values.get("privileged", False) is True:
             logger.warning("runtime.privileged enabled (security & portability warning)")
             ans += ["--add-caps", "all"]
-        ans += self.cfg.get_list("singularity", "run_options")
+        TRANSFER_RUN_IDS = {
+            "download-aria2c",
+            "download-aws_s3_cp",
+            "download-aws_s3_cp_directory",
+            "download-gsutil_cp"
+        }
+        if self.run_id in TRANSFER_RUN_IDS:
+            ans += self.cfg.get_list("singularity", "transfer_run_options")
+        else
+            ans += self.cfg.get_list("singularity", "run_options")
 
         mounts = self.prepare_mounts()
         # Also create a scratch directory and mount to /tmp and /var/tmp
